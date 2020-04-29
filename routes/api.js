@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const Transaction = require("../models/transaction.js");
 
-router.get("/", (req, res) => {
+router.get("/api/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/htmlFile.html"));
 });
 
