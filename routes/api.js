@@ -1,39 +1,33 @@
 const router = require("express").Router();
 const Transaction = require("../models/transaction.js");
 
-router.get("/api/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/htmlFile.html"));
+// Removed invalid catch-all route that referenced an undefined path variable
+
+router.post("/api/transaction", async ({ body }, res) => {
+  try {
+    const dbTransaction = await Transaction.create(body);
+    res.status(201).json(dbTransaction);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
-router.post("/api/transaction", ({ body }, res) => {
-  Transaction.create(body)
-    .then((dbTransaction) => {
-      res.json(dbTransaction);
-    })
-    .catch((err) => {
-      res.status(404).json(err);
-    });
+router.post("/api/transaction/bulk", async ({ body }, res) => {
+  try {
+    const dbTransaction = await Transaction.insertMany(body);
+    res.status(201).json(dbTransaction);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
-router.post("/api/transaction/bulk", ({ body }, res) => {
-  Transaction.insertMany(body)
-    .then((dbTransaction) => {
-      res.json(dbTransaction);
-    })
-    .catch((err) => {
-      res.status(404).json(err);
-    });
-});
-
-router.get("/api/transaction", (req, res) => {
-  Transaction.find({})
-    .sort({ date: -1 })
-    .then((dbTransaction) => {
-      res.json(dbTransaction);
-    })
-    .catch((err) => {
-      res.status(404).json(err);
-    });
+router.get("/api/transaction", async (req, res) => {
+  try {
+    const dbTransaction = await Transaction.find({}).sort({ date: -1 });
+    res.json(dbTransaction);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = router;
